@@ -2,8 +2,10 @@ package pk.edu.pucit.calculator;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import org.mariuszgromada.math.mxparser.*;
 
 public class MainActivity extends AppCompatActivity {
     TextView zero,double_zero,one,two,three,four,five,six,seven,eight,nine,point,equals,add,subtract,divide,mod,multiply,ac,del,equation,result;
@@ -38,11 +40,42 @@ public class MainActivity extends AppCompatActivity {
 
     public void clear(View view) {
         equation.setText("");
+        result.setText("");
 
     }
 
     public void concat(View view) {
-        equation.setText((equation.getText()) + ((TextView)view).getText().toString());
+        String str=((TextView)view).getText().toString();
+        String eqn= String.valueOf(equation.getText());
+
+        if (eqn.length()==0){
+            if ((str.equals("+") || str.equals("/") || str.equals("*") || str.equals("%") || str.equals("00") || str.equals("0")))
+            {
+                equation.setText("");
+            }
+            else {
+                equation.setText((equation.getText()) + str);
+
+            }
+        }
+
+        else {
+            String last= Character.toString(eqn.charAt(eqn.length()-1));
+//            equation.setText(last);
+            if ((last.equals("+") || last.equals("-") || last.equals("%")) && (str.equals("+") || str.equals("-") || str.equals("/") || str.equals("*") || str.equals("%"))){
+                delete_char(view);
+            }
+            else if ((last.equals("*") || last.equals("/")) && (str.equals("+") || str.equals("/") || str.equals("*") || str.equals("%"))){
+                delete_char(view);
+            }
+//            if ((last.equals("-") || last.equals("+") || last.equals("/") || last.equals("*") || last.equals("%")) && (str.equals("+") || str.equals("*") || str.equals("/") || str.equals("%"))){
+//                delete_char(view);
+//
+//            }
+            equation.setText((equation.getText()) + str);
+
+        }
+
     }
 
     public void delete_char(View view) {
@@ -50,5 +83,12 @@ public class MainActivity extends AppCompatActivity {
         if (str.length() > 0) {
             equation.setText(str.substring(0, str.length() - 1));
         }
+    }
+
+    public void equate(View view) {
+        String str= String.valueOf(equation.getText());
+        Expression exp=new Expression(str);
+        String res=String.valueOf(exp.calculate());
+        result.setText(res);
     }
 }
